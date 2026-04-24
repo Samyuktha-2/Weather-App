@@ -63,26 +63,53 @@
                 <StackPanel Grid.Row="2"
                             Orientation="Horizontal"
                             HorizontalAlignment="Center"
-                            Margin="0,20,0,0">
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Today" />
-                        <TextBlock Text="20°" />
-                    </StackPanel>
+                            Margin="20,0,20,0">
+                    <ItemsControl ItemsSource="{Binding DailyData}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Tue" />
-                        <TextBlock Text="32°" />
-                    </StackPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="10"
+                                        Padding="15"
+                                        Margin="10">
 
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Wed" />
-                        <TextBlock Text="12°" />
-                    </StackPanel>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background"
+                                                    Value="Transparent" />
+                                            <Setter Property="BorderBrush"
+                                                    Value="Transparent" />
+                                            <Setter Property="BorderThickness"
+                                                    Value="0" />
 
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Thu" />
-                        <TextBlock Text="13°" />
-                    </StackPanel>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsToday}"
+                                                             Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="White" />
+                                                    <Setter Property="BorderBrush"
+                                                            Value="Gray" />
+                                                    <Setter Property="BorderThickness"
+                                                            Value="1" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Day}"
+                                                   HorizontalAlignment="Center" />
+                                        <TextBlock Text="{Binding Temperature, StringFormat={}{0}°}"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </Grid>
 
@@ -104,7 +131,7 @@
                            HorizontalAlignment="Right"
                            Margin="0,0,0,20" />
 
-                <TextBlock Text="{Binding Temperature}"
+                <TextBlock Text="{Binding Temperature, StringFormat={}{0}°C}"
                            FontSize="30"
                            HorizontalAlignment="Right" />
 

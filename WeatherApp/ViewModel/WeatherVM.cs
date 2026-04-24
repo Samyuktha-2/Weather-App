@@ -8,8 +8,11 @@ using System.Windows.Input;
 using WeatherApp.Command;
 using System.Configuration;
 using System.Net.Http;
+using WeatherApp.Model;
+using Newtonsoft.Json;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace WeatherApp.ViewModel
 {
@@ -24,6 +27,7 @@ namespace WeatherApp.ViewModel
         private string displayCity;
         private int humidity;
         private string greeting;
+        private double wind;
 
         public string City
         {
@@ -97,6 +101,15 @@ namespace WeatherApp.ViewModel
                 OnPropertyChanged(nameof(Humidity));
             }
         }
+        public double Wind
+        {
+            get => wind;
+            set
+            {
+                wind = value;
+                OnPropertyChanged(nameof(Wind));
+            }
+        }
         public string Greeting
         {
             get => greeting;
@@ -121,7 +134,7 @@ namespace WeatherApp.ViewModel
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += (s, e) =>
-            {  
+            {
                 var now = DateTime.Now;
 
                 Time = now.ToString("hh:mm tt");
@@ -144,31 +157,30 @@ namespace WeatherApp.ViewModel
         private async Task GetWeather(string cityName = null)
         {
             try
-            { 
-                //string apiKey = Environment.GetEnvironmentVariable("WeatherAPI", EnvironmentVariableTarget.User);
-                //string apiKey = Environment.GetEnvironmentVariable("WeatherAPI")
-                //string apiKey = ConfigurationManager.AppSettings["WeatherAPI"];
-
+            {
                 string apiKey = "c62f5ec5a571e9535a681638958e7a0b";
                 string queryCity = string.IsNullOrWhiteSpace(cityName) ? City : cityName;
 
                 string url = $"https://api.openweathermap.org/data/2.5/weather?q={queryCity}&appid={apiKey}&units=metric";
-                using (HttpClient Client = new HttpClient())
+
+                using (HttpClient client = new HttpClient())
                 {
-                    var response = await Client.GetStringAsync(url);
-                    //var json = await response.Content.ReadAsStringAsync();
-                    //var data = Newtonsoft.Json.JsonConvert.DeserializeObject<WeatherResponse>(json);
-                    dynamic data = Newtonsoft.Json.JsonConvert.DeserializeObject(response);
-                    ProcessDailyData(data);
-                    Temperature = data.main.temp;
-                    Condition = data.weather[0].main;
-                    Humidity = data.main.humidity;
+                    var json = await client.GetStringAsync(url);
+
+                    var data = JsonConvert.DeserializeObject<WeatherResponse>(json);
+
+                    Temperature = data.Main.Temp;
+                    Condition = data.Weather[0].Main;
+                    Humidity = data.Main.Humidity;
+                    Wind = data.Wind.Speed;
                 }
+
                 DisplayCity = queryCity;
+                await GetForecast(queryCity);
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -176,8 +188,8 @@ namespace WeatherApp.ViewModel
         {
             DailyData.Clear();
 
-            var grouped = data.list
-                .GroupBy(x => DateTime.Parse(x.dt_txt).Date)
+            var grouped = data.List
+                .GroupBy(x => DateTime.Parse(x.Dt_txt).Date)
                 .Take(5);
 
             foreach (var day in grouped)
@@ -186,12 +198,38 @@ namespace WeatherApp.ViewModel
 
                 DailyData.Add(new ForecastModel
                 {
-                    Day = day.Key == DateTime.Now.Date
-                        ? "Today"
-                        : day.Key.ToString("ddd"),
-                    Temperature = first.main.temp
+                    Day = day.Key == DateTime.Now.Date ? "Today" : day.Key.ToString("ddd"),
+                    Temperature = first.Main.Temp,
+                    IsToday = day.Key == DateTime.Now.Date
                 });
+            }
+        }
+
+        private async Task GetForecast(string cityName)
+        {
+            try
+            {
+                string apiKey = "c62f5ec5a571e9535a681638958e7a0b";
+
+                string url = $"https://api.openweathermap.org/data/2.5/forecast?q={cityName}&appid={apiKey}&units=metric";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    var json = await client.GetStringAsync(url);
+
+                    var data = JsonConvert.DeserializeObject<ForecastResponse>(json);
+
+                    ProcessDailyData(data); // ✅ NOW CORRECT
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }
 }
+//string apiKey = Environment.GetEnvironmentVariable("WeatherAPI", EnvironmentVariableTarget.User);
+//string apiKey = Environment.GetEnvironmentVariable("WeatherAPI")
+//string apiKey = ConfigurationManager.AppSettings["WeatherAPI"];
+//dynamic data = Newtonsoft.Json.JsonConvert.DeserializeObject(response);

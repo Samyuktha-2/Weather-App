@@ -11,8 +11,7 @@ namespace WeatherApp.Model
     public class ForecastResponse
     {
         public List<ForecastItem> List { get; set; }
-    }
-    s
+    } 
     public class ForecastItem
     {
         public MainInfo Main { get; set; }

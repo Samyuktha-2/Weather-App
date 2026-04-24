@@ -10,7 +10,7 @@ namespace WeatherApp.Model
     {
         public string Day { get; set; } 
         public double Temperature { get; set; }
-        
+        public bool IsToday { get; set; }
         //public class DailyForecast {  }
     }
 }
