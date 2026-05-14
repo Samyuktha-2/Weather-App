@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WeatherApp.View"
-             xmlns:helpers="clr-namespace:WeatherApp.Helpers"
-             mc:Ignorable="d"
+             xmlns:helpers="clr-namespace:WeatherApp.Helpers" 
+             mc:Ignorable="d" 
              d:DesignHeight="700"
              d:DesignWidth="1000">
 
@@ -21,7 +21,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="170" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" /> 
             </Grid.RowDefinitions>
 
             <!-- TOP NAVIGATION -->
@@ -172,21 +172,18 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-
-                <!-- TITLE -->
+ 
                 <TextBlock Text="Today's Highlights"
                            FontSize="28"
                            FontWeight="SemiBold"
-                           Margin="0,0,0,25" />
-
-                <!-- CARDS -->
+                           Margin="0,0,0,10" />
+ 
                 <UniformGrid Grid.Row="1"
                              Columns="3"
                              Rows="2">
-
-                    <!-- HUMIDITY -->
+ 
                     <Border 
                             CornerRadius="25"
                             Background="#F5F5F5"
@@ -210,15 +207,13 @@
                         </StackPanel>
 
                     </Border>
-
-                    <!-- WIND -->
+ 
                     <Border Background="#F5F5F5"
                             CornerRadius="25"
                             Margin="0,0,20,20"
                             Padding="20">
 
-                        <StackPanel>
-
+                        <StackPanel> 
                             <TextBlock Text="Wind Status"
                                        Foreground="#999"
                                        FontSize="16" />
@@ -229,13 +224,11 @@
                                        Margin="0,20,0,10" />
 
                             <TextBlock Text="{Binding WindStat}"
-                                       FontSize="16" />
-
+                                       FontSize="16" /> 
                         </StackPanel>
 
-                    </Border>
-
-                    <!-- VISIBILITY -->
+                    </Border> 
+                    
                     <Border Background="#F5F5F5"
                             CornerRadius="25"
                             Margin="0,0,20,20"
@@ -258,36 +251,14 @@
                         </StackPanel>
 
                     </Border>
-
-                    <!-- AIR QUALITY -->
-                    <!--<Border Background="#F5F5F5"
-                            CornerRadius="25"
-                            Margin="0,0,20,20"
-                            Padding="20">
-
-                        <StackPanel>
-
-                            <TextBlock Text="Sunrise  Sunset"
-                                       Foreground="#999"
-                                       FontSize="16" />
-
-                            <TextBlock Text="105"
-                                       FontSize="40"
-                                       FontWeight="Bold"
-                                       Margin="0,20,0,10" />
-
-                            <TextBlock Text="Unhealthy 👎"
-                                       FontSize="16" />
-
-                        </StackPanel>
-
-                    </Border>-->
-
+ 
                 </UniformGrid>
 
             </Grid>
-
+ 
+            
         </Grid>
+        
     </Border>
    
 </UserControl>

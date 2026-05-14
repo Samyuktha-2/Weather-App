@@ -3,12 +3,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 using WeatherApp.Command;
 using WeatherApp.Model;
 
@@ -30,7 +28,7 @@ namespace WeatherApp.ViewModel
         private string _windStat;
         private string _visibilityStat;
         private bool _buttonVisibility = false;
-        private string _icon;
+        private string _icon;  
 
         public string Icon
         {
@@ -170,8 +168,7 @@ namespace WeatherApp.ViewModel
                 OnPropertyChanged(nameof(VisibilityStat));
             }
         }
-
-
+        
         public ICommand SearchCommand { get; }
         public ICommand CelciusCommand { get; }
         public ICommand FarenheitCommand { get; }
@@ -182,6 +179,7 @@ namespace WeatherApp.ViewModel
         {
             SearchCommand = new RelayCommand(() => _ = GetWeather());
             Greet = GetGreeting(DateTime.Now.Hour);
+
             CelciusCommand = new RelayCommand(InCelcius);
             FarenheitCommand = new RelayCommand(InFarenheit);
         }
@@ -189,27 +187,35 @@ namespace WeatherApp.ViewModel
         private async Task GetWeather()
         {
             string apiKey = "c62f5ec5a571e9535a681638958e7a0b";
-            if (string.IsNullOrWhiteSpace(City))
+            if (!IsValidCity(City))
             {
-                MessageBox.Show("Enter a valid City");
+                MessageBox.Show("Enter city name");
                 return;
             }
-            DisplayCity = City;
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={City}&appid={apiKey}&units=metric";
-
-            using (HttpClient client = new HttpClient())
+            try
             {
-                var json = await client.GetStringAsync(url);
-                var data = JsonConvert.DeserializeObject<WeatherResponse>(json);
+                string url = $"https://api.openweathermap.org/data/2.5/weather?q={City}&appid={apiKey}&units=metric";
+                using (HttpClient client = new HttpClient())
+                {
+                    var json = await client.GetStringAsync(url);
 
-                Temperature = data.Main.Temp;
-                Condition = data.Weather[0].Main;
-                Descrpt = data.Weather[0].Description;
-                Humidity = data.Main.Humidity;
-                Wind = data.Wind.Speed;
-                Visibility = data.Visibility;
-                Icon = GetWeatherIcon(Condition);
+                    var data = JsonConvert.DeserializeObject<WeatherResponse>(json);
+
+                    DisplayCity = City;
+                    Temperature = data.Main.Temp;
+                    Condition = data.Weather[0].Main;
+                    Descrpt = data.Weather[0].Description;
+                    Humidity = data.Main.Humidity;
+                    Wind = data.Wind.Speed;
+                    Visibility = data.Visibility;
+                    Icon = GetWeatherIcon(Condition);
+                }
             }
+            catch
+            {
+                MessageBox.Show("City not found");
+            }
+
             GetForecast();
             HumidityStatus();
             WindStatus();
@@ -387,5 +393,14 @@ namespace WeatherApp.ViewModel
 
             VisibilityStat = "Clear 😎";
         }
+
+        private bool IsValidCity(string city)
+        {
+            if (string.IsNullOrWhiteSpace(city))
+                return false;
+
+            return System.Text.RegularExpressions.Regex
+                .IsMatch(city, @"^[a-zA-Z\s\-]+$");
+        } 
     }
 }
