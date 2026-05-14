@@ -1,34 +1,46 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WeatherApp.Model;
-using System.Windows.Input;
-using WeatherApp.Command;
-using System.Configuration;
-using System.Net.Http;
-using WeatherApp.Model;
-using Newtonsoft.Json;
-using System.Windows.Threading;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
+using WeatherApp.Command;
+using WeatherApp.Model;
 
 namespace WeatherApp.ViewModel
 {
     public class WeatherVM : BaseVM
     {
         private string city;
-        private double temperature;
-        private string time;
-        private string date;
-        private string day;
-        private string condition;
         private string displayCity;
-        private int humidity;
-        private string greeting;
-        private double wind;
+        private double _temperature;
+        private string _condition;
+        private string _greet;
+        private string _description;
+        private int _humidity;
+        private double _wind;
+        private int _visibility;
+        private bool _isCelsius = true;
+        private string _humidityStat;
+        private string _windStat;
+        private string _visibilityStat;
+        private bool _buttonVisibility = false;
+        private string _icon;
 
+        public string Icon
+        {
+            get => _icon;
+            set
+            {
+                _icon = value;
+                OnPropertyChanged(nameof(Icon));
+            }
+        }
         public string City
         {
             get => city;
@@ -49,187 +61,331 @@ namespace WeatherApp.ViewModel
         }
         public double Temperature
         {
-            get => temperature;
+            get => _temperature;
             set
             {
-                temperature = value;
+                _temperature = value;
                 OnPropertyChanged(nameof(Temperature));
-            }
-        }
-        public string Time
-        {
-            get => time;
-            set
-            {
-                time = value;
-                OnPropertyChanged(nameof(Time));
-            }
-        }
-        public string Date
-        {
-            get => date;
-            set
-            {
-                date = value;
-                OnPropertyChanged(nameof(Date));
-            }
-        }
-        public string Day
-        {
-            get => day;
-            set
-            {
-                day = value;
-                OnPropertyChanged(nameof(Day));
             }
         }
         public string Condition
         {
-            get => condition;
+            get => _condition;
             set
             {
-                condition = value;
+                _condition = value;
                 OnPropertyChanged(nameof(Condition));
             }
         }
-        public int Humidity
+        public string Descrpt
         {
-            get => humidity;
+            get => _description;
             set
             {
-                humidity = value;
+                _description = value;
+                OnPropertyChanged(nameof(Descrpt));
+            }
+        }
+        public string Greet
+        {
+            get => _greet;
+            set
+            {
+                _greet = value;
+                OnPropertyChanged(nameof(Greet));
+            }
+        }
+
+        public int Humidity
+        {
+            get => _humidity;
+            set
+            {
+                _humidity = value;
                 OnPropertyChanged(nameof(Humidity));
             }
         }
         public double Wind
         {
-            get => wind;
+            get => _wind;
             set
             {
-                wind = value;
+                _wind = value;
                 OnPropertyChanged(nameof(Wind));
             }
         }
-        public string Greeting
+        public int Visibility
         {
-            get => greeting;
+            get => _visibility;
             set
             {
-                greeting = value;
-                OnPropertyChanged(nameof(Greeting));
+                _visibility = value;
+                OnPropertyChanged(nameof(Visibility));
             }
         }
 
-        public ObservableCollection<ForecastModel> DailyData { get; set; } = new ObservableCollection<ForecastModel>();
+        public bool IsCelsius
+        {
+            get => _isCelsius;
+            set
+            {
+                _isCelsius = value;
+                OnPropertyChanged(nameof(IsCelsius));
+            }
+        }
+        public bool ButtonVisibility
+        {
+            get => _buttonVisibility;
+            set
+            {
+                _buttonVisibility = value;
+                OnPropertyChanged(nameof(ButtonVisibility));
+            }
+        }
+
+        public string HumidityStat
+        {
+            get => _humidityStat;
+            set
+            {
+                _humidityStat = value;
+                OnPropertyChanged(nameof(HumidityStat));
+            }
+        }
+        public string WindStat
+        {
+            get => _windStat;
+            set
+            {
+                _windStat = value;
+                OnPropertyChanged(nameof(WindStat));
+            }
+        }
+        public string VisibilityStat
+        {
+            get => _visibilityStat;
+            set
+            {
+                _visibilityStat = value;
+                OnPropertyChanged(nameof(VisibilityStat));
+            }
+        }
+
 
         public ICommand SearchCommand { get; }
+        public ICommand CelciusCommand { get; }
+        public ICommand FarenheitCommand { get; }
+
+        public ObservableCollection<ForecastModel> WeeklyForecasts { get; set; } = new ObservableCollection<ForecastModel>();
 
         public WeatherVM()
         {
+            SearchCommand = new RelayCommand(() => _ = GetWeather());
+            Greet = GetGreeting(DateTime.Now.Hour);
+            CelciusCommand = new RelayCommand(InCelcius);
+            FarenheitCommand = new RelayCommand(InFarenheit);
+        }
 
-            DisplayCity = "Coimbatore";
-            SearchCommand = new RelayCommand(async () => await GetWeather());
-            _ = GetWeather("Coimbatore");
-
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (s, e) =>
+        private async Task GetWeather()
+        {
+            string apiKey = "c62f5ec5a571e9535a681638958e7a0b";
+            if (string.IsNullOrWhiteSpace(City))
             {
-                var now = DateTime.Now;
+                MessageBox.Show("Enter a valid City");
+                return;
+            }
+            DisplayCity = City;
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={City}&appid={apiKey}&units=metric";
 
-                Time = now.ToString("hh:mm tt");
-                Date = DateTime.Now.ToString("dd/MM/yyyy");
-                Day = DateTime.Now.ToString("dddd");
-                Greeting = GetGreeting(now.Hour);
-            };
+            using (HttpClient client = new HttpClient())
+            {
+                var json = await client.GetStringAsync(url);
+                var data = JsonConvert.DeserializeObject<WeatherResponse>(json);
 
-            timer.Start();
+                Temperature = data.Main.Temp;
+                Condition = data.Weather[0].Main;
+                Descrpt = data.Weather[0].Description;
+                Humidity = data.Main.Humidity;
+                Wind = data.Wind.Speed;
+                Visibility = data.Visibility;
+                Icon = GetWeatherIcon(Condition);
+            }
+            GetForecast();
+            HumidityStatus();
+            WindStatus();
+            VisibilityStatus();
+            ButtonVisibility = true;
         }
 
         private string GetGreeting(int hour)
         {
-            if (hour >= 5 && hour < 12) return "Good Morning!";
-            if (hour >= 12 && hour < 17) return "Good Afternoon!";
-            if (hour >= 17 && hour < 21) return "Good Evening!";
-            return "Good Night!";
+            string currentTime = DateTime.Now.ToString("HH:mm");
+            if (hour >= 5 && hour < 12) return $"Morning {currentTime}am";
+            if (hour >= 12 && hour < 17) return $"Afternoon {currentTime}pm";
+            if (hour >= 17 && hour < 21) return $"Evening {currentTime}pm";
+            return $"Night {currentTime}pm";
         }
 
-        private async Task GetWeather(string cityName = null)
-        {
-            try
-            {
-                string apiKey = "c62f5ec5a571e9535a681638958e7a0b";
-                string queryCity = string.IsNullOrWhiteSpace(cityName) ? City : cityName;
-
-                string url = $"https://api.openweathermap.org/data/2.5/weather?q={queryCity}&appid={apiKey}&units=metric";
-
-                using (HttpClient client = new HttpClient())
-                {
-                    var json = await client.GetStringAsync(url);
-
-                    var data = JsonConvert.DeserializeObject<WeatherResponse>(json);
-
-                    Temperature = data.Main.Temp;
-                    Condition = data.Weather[0].Main;
-                    Humidity = data.Main.Humidity;
-                    Wind = data.Wind.Speed;
-                }
-
-                DisplayCity = queryCity;
-                await GetForecast(queryCity);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void ProcessDailyData(ForecastResponse data)
-        {
-            DailyData.Clear();
-
-            var grouped = data.List
-                .GroupBy(x => DateTime.Parse(x.Dt_txt).Date)
-                .Take(5);
-
-            foreach (var day in grouped)
-            {
-                var first = day.First();
-
-                DailyData.Add(new ForecastModel
-                {
-                    Day = day.Key == DateTime.Now.Date ? "Today" : day.Key.ToString("ddd"),
-                    Temperature = first.Main.Temp,
-                    IsToday = day.Key == DateTime.Now.Date
-                });
-            }
-        }
-
-        private async Task GetForecast(string cityName)
+        public async void GetForecast()
         {
             try
             {
                 string apiKey = "c62f5ec5a571e9535a681638958e7a0b";
 
-                string url = $"https://api.openweathermap.org/data/2.5/forecast?q={cityName}&appid={apiKey}&units=metric";
+                string url = $"https://api.openweathermap.org/data/2.5/forecast?q={City}&appid={apiKey}&units=metric";
 
                 using (HttpClient client = new HttpClient())
                 {
-                    var json = await client.GetStringAsync(url);
+                    string json = await client.GetStringAsync(url);
 
-                    var data = JsonConvert.DeserializeObject<ForecastResponse>(json);
+                    JObject data = JObject.Parse(json);
 
-                    ProcessDailyData(data); // ✅ NOW CORRECT
+                    WeeklyForecasts.Clear();
+
+                    var addedDays = new HashSet<string>();
+                    DateTime today = DateTime.Today;
+
+                    foreach (var item in data["list"])
+                    {
+                        DateTime date =
+                            DateTime.Parse(item["dt_txt"].ToString());
+
+                        if (date.Date == today)
+                            continue;
+
+                        if (date.Hour != 12)
+                            continue;
+
+                        string day = date.ToString("ddd");
+
+                        if (!addedDays.Contains(day))
+                        {
+                            addedDays.Add(day);
+                            WeeklyForecasts.Add(new ForecastModel
+                            {
+                                Day = day,
+                                Temperature = (int)Math.Round((double)item["main"]["temp"]),
+                                Icon = GetWeatherIcon(item["weather"][0]["main"].ToString())
+                            });
+                        }
+
+                        if (WeeklyForecasts.Count == 5)
+                            break;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private string GetWeatherIcon(string condition)
+        {
+            switch (condition)
+            {
+                case "Clouds":
+                    return "☁";
+
+                case "Rain":
+                    return "🌧";
+
+                case "Clear":
+                    return "☀";
+
+                case "Thunderstorm":
+                    return "⛈";
+
+                case "Snow":
+                    return "❄";
+
+                default:
+                    return "☀";
+            }
+        }
+
+        private void InCelcius()
+        {
+            if (!IsCelsius)
+            {
+                double c = (Temperature - 32) * 5 / 9;
+                Temperature = c;
+
+                foreach (var item in WeeklyForecasts)
+                {
+                    double c1 = (item.Temperature - 32) * 5 / 9;
+                    item.Temperature = c1;
+                }
+
+                IsCelsius = true;
+            }
+        }
+
+        private void InFarenheit()
+        {
+            if (IsCelsius)
+            {
+                double f = (Temperature * 9 / 5) + 32;
+                Temperature = f;
+
+                foreach (var item in WeeklyForecasts)
+                {
+                    double f1 = (item.Temperature * 9 / 5) + 32;
+                    item.Temperature = f1;
+                }
+
+                IsCelsius = false;
+            }
+        }
+
+        private void HumidityStatus()
+        {
+            if (Humidity < 30)
+            {
+                HumidityStat = "Low 😓";
+                return;
+            }
+            if (Humidity <= 60)
+            {
+                HumidityStat = "Normal 👍";
+                return;
+            }
+            HumidityStat = "High 💧";
+            return;
+        }
+
+        private void WindStatus()
+        {
+            if (Wind < 10)
+            {
+                WindStat = "Light 🍃";
+                return;
+            }
+
+            if (Wind <= 25)
+            {
+                WindStat = "Moderate 🌬";
+                return;
+            }
+            WindStat = "Strong 💨";
+            return;
+        }
+
+        private void VisibilityStatus()
+        {
+            if (Visibility < 2)
+            {
+                VisibilityStat = "Poor 😵";
+                return;
+            }
+
+            if (Visibility <= 6)
+            {
+                VisibilityStat = "Average 🙂";
+                return;
+            }
+
+            VisibilityStat = "Clear 😎";
         }
     }
 }
-//string apiKey = Environment.GetEnvironmentVariable("WeatherAPI", EnvironmentVariableTarget.User);
-//string apiKey = Environment.GetEnvironmentVariable("WeatherAPI")
-//string apiKey = ConfigurationManager.AppSettings["WeatherAPI"];
-//dynamic data = Newtonsoft.Json.JsonConvert.DeserializeObject(response);

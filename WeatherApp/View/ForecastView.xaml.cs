@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace WeatherApp.View
 {
     /// <summary>
-    /// Interaction logic for MainView.xaml
+    /// Interaction logic for ForecastView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class ForecastView : UserControl
     {
-        public MainView()
+        public ForecastView()
         {
             InitializeComponent();
         }

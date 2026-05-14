@@ -8,7 +8,6 @@ namespace WeatherApp.ViewModel
 {
     public class MainVM : BaseVM
     {
-        WeatherVM weather = new WeatherVM();
-        
+        WeatherVM weather = new WeatherVM(); 
     }
 }

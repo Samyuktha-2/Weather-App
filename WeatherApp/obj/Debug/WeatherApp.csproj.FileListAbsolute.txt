@@ -3,15 +3,16 @@ C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\bin\Debug\WeatherApp.exe
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\bin\Debug\WeatherApp.pdb
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\bin\Debug\Newtonsoft.Json.dll
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\bin\Debug\Newtonsoft.Json.xml
-C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.csprojAssemblyReference.cache
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\MainWindow.g.cs
-C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\MainView.g.cs
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\ForecastView.g.cs
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\WeatherDisplayView.g.cs
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\App.g.cs
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp_MarkupCompile.cache
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp_MarkupCompile.lref
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\MainWindow.baml
-C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\MainView.baml
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\ForecastView.baml
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\WeatherDisplayView.baml
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.g.resources
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.Properties.Resources.resources
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.csproj.GenerateResource.cache
@@ -19,3 +20,6 @@ C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.csproj.Cor
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.csproj.CopyComplete
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.exe
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.pdb
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\WeatherApp.csprojAssemblyReference.cache
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\WeeklyForecastView.g.cs
+C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\obj\Debug\View\WeeklyForecastView.baml

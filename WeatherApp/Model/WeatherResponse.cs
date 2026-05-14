@@ -11,7 +11,7 @@ namespace WeatherApp.Model
         public MainInfo Main { get; set; }
         public WindInfo Wind { get; set; }
         public List<WeatherInfo> Weather { get; set; }
-
+        public int Visibility { get; set; }
         public class MainInfo
         {
             public double Temp { get; set; }

@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\OptiCheck\Desktop\WeatherApp\WeatherApp\App.xaml
-2702257237
+41028705569
 
-181612462375
+211937756810
 14-1213068735
-MainWindow.xaml;View\MainView.xaml;
+MainWindow.xaml;View\ForecastView.xaml;View\WeatherDisplayView.xaml;View\WeeklyForecastView.xaml;
 
-False
+True
 
